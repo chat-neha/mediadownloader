@@ -30,25 +30,20 @@ jobs:
         run: |
           sudo apt install -y openjdk-17-jdk
 
-      - name: Install Android SDK Command Line Tools and accept licenses
+      - name: Install Android SDK Command Line Tools
         run: |
           # Download Android command line tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
           unzip commandlinetools.zip -d $HOME/Android
           rm commandlinetools.zip
 
-          # Install Android SDK components including AIDL
+          # Install Android SDK and NDK (ensure build-tools and NDK are specifically mentioned)
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30" "build-tools;30.0.3"
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
 
-          # Check for AIDL
-          echo "Checking if AIDL exists in build-tools directory..."
-          ls $HOME/Android/build-tools/30.0.3/aidl
-
-      - name: Set Environment Variables for Android SDK
-        run: |
+          # Set environment variables for the Android SDK
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3:$ANDROID_HOME/ndk/21.3.6528147:$PATH" >> $GITHUB_ENV
+          echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3:$PATH" >> $GITHUB_ENV
 
       - name: Download ffmpeg.exe
         run: |
