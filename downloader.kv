@@ -1,0 +1,22 @@
+BoxLayout:
+    orientation: "vertical"
+    padding: 10
+    spacing: 10
+
+    TextInput:
+        id: link_input
+        hint_text: "Enter YouTube Video Link"
+        multiline: False
+
+    TextInput:
+        id: format_input
+        hint_text: "Enter format (mp3/mp4)"
+        multiline: False
+
+    Label:
+        id: status_label
+        text: ""
+
+    Button:
+        text: "Download"
+        on_press: app.download_video()

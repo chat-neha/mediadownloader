@@ -1,0 +1,22 @@
+name: Build APK
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y wget
+
+      - name: Download ffmpeg.exe from Google Drive
+        run: |
+          wget --no-check-certificate "https://drive.google.com/uc?export=download&id=1t6u5fsMOIlW3XodLp_bjOV60XzXQsiar" -O ffmpeg.exe
+
+      - name: Verify file
+        run: ls -lh ffmpeg.exe
+
