@@ -2,6 +2,7 @@
 title = DownloaderApp
 package.name = downloader
 package.domain = org.kivy
+source.dir = .
 source.include_exts = py,kv
 source.exclude_exts = spec
 version = 1.0
