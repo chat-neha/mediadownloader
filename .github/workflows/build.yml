@@ -30,23 +30,20 @@ jobs:
         run: |
           sudo apt install -y openjdk-17-jdk
 
-      - name: Install Android SDK Command Line Tools and Accept Licenses
+      - name: Install Android SDK Command Line Tools
         run: |
-          # Clear SDK cache
-          rm -rf $HOME/Android
-
           # Download Android command line tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
           unzip commandlinetools.zip -d $HOME/Android
           rm commandlinetools.zip
 
-          # Set up Android SDK environment
+          # Install Android SDK and NDK
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
+
+          # Set environment variables for the Android SDK
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3:$PATH" >> $GITHUB_ENV
-
-          # Accept all SDK licenses interactively
-          echo "y" | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
-          $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
 
       - name: Download ffmpeg.exe
         run: |
@@ -54,6 +51,9 @@ jobs:
 
       - name: Build APK
         run: |
+          # Ensure the SDK manager licenses are accepted without prompt
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
+
           buildozer -v android debug
 
       - name: Upload APK
