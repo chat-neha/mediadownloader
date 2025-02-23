@@ -37,13 +37,13 @@ jobs:
           unzip commandlinetools.zip -d $HOME/Android
           rm commandlinetools.zip
 
-          # Accept all SDK licenses explicitly
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
-
-          # Set environment variables for the Android SDK
+          # Set up Android SDK environment
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3:$PATH" >> $GITHUB_ENV
+
+          # Accept all SDK licenses interactively
+          echo "y" | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
+          $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
 
       - name: Download ffmpeg.exe
         run: |
