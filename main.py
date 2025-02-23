@@ -21,7 +21,9 @@ def download_video(url, format_type):
             'nocheckcertificate': True,  # Bypass SSL issues
             'force-ipv4': True,  # Avoid captcha verification
             'ignoreerrors': True,  # Continue on minor errors
-            'fallback-format': '18'  # Fallback to MP4 360p if best fails
+            'fallback-format': '18',  # Fallback to MP4 360p if best fails
+            'cookies_from_browser': ('chrome',),  # Allow user to sign in via Chrome
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         },
         'mp3': {
             'format': 'bestaudio/best',
@@ -29,7 +31,9 @@ def download_video(url, format_type):
             'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}],
             'nocheckcertificate': True,
             'force-ipv4': True,
-            'ignoreerrors': True
+            'ignoreerrors': True,
+            'cookies_from_browser': ('chrome',),
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         }
     }
 
