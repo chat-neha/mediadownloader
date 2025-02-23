@@ -37,14 +37,9 @@ jobs:
           unzip commandlinetools.zip -d $HOME/Android
           rm commandlinetools.zip
 
-          # Install Android SDK components and explicitly accept licenses
+          # Accept all SDK licenses explicitly
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
-
-          # Manually accept the licenses by touching the LICENSE files
-          touch $HOME/Android/licenses/android-sdk-license
-          touch $HOME/Android/licenses/android-sdk-preview-license
-          touch $HOME/Android/licenses/android-ndk-license
-          touch $HOME/Android/licenses/android-sdk-license-stable
 
           # Set environment variables for the Android SDK
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
