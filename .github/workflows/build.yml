@@ -30,20 +30,23 @@ jobs:
         run: |
           sudo apt install -y openjdk-17-jdk
 
-      - name: Install Android SDK Command Line Tools
+      - name: Install Android SDK Command Line Tools and accept licenses
         run: |
           # Download Android command line tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
           unzip commandlinetools.zip -d $HOME/Android
           rm commandlinetools.zip
 
-          # Accept licenses for all SDK components
+          # Install Android SDK components including AIDL
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30" "build-tools;30.0.3"
 
-          # Install required Android SDK components, including build-tools, NDK, and AIDL
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "platforms;android-30" "tools"
+          # Check for AIDL
+          echo "Checking if AIDL exists in build-tools directory..."
+          ls $HOME/Android/build-tools/30.0.3/aidl
 
-          # Set environment variables for the Android SDK
+      - name: Set Environment Variables for Android SDK
+        run: |
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3:$ANDROID_HOME/ndk/21.3.6528147:$PATH" >> $GITHUB_ENV
 
