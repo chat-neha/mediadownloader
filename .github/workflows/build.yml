@@ -37,17 +37,19 @@ jobs:
           unzip commandlinetools.zip -d $HOME/Android
           rm commandlinetools.zip
 
-          # Install Android SDK and NDK and accept licenses
+          # Accept licenses for all SDK components
           yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android --licenses
-          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "tools" "platforms;android-30"
+
+          # Install required Android SDK components, including build-tools, NDK, and AIDL
+          yes | $HOME/Android/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android "platform-tools" "build-tools;30.0.3" "ndk;21.3.6528147" "platforms;android-30" "tools"
 
           # Set environment variables for the Android SDK
           echo "export ANDROID_HOME=$HOME/Android" >> $GITHUB_ENV
           echo "export PATH=$ANDROID_HOME/cmdline-tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3:$ANDROID_HOME/ndk/21.3.6528147:$PATH" >> $GITHUB_ENV
 
-      - name: Install ffmpeg (Linux version)
+      - name: Download ffmpeg.exe
         run: |
-          sudo apt install -y ffmpeg
+          gdown --id 1t6u5fsMOIlW3XodLp_bjOV60XzXQsiar -O ffmpeg.exe
 
       - name: Build APK
         run: |
