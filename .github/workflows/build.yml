@@ -32,6 +32,9 @@ jobs:
 
       - name: Install Android SDK Command Line Tools and Accept Licenses
         run: |
+          # Clear SDK cache
+          rm -rf $HOME/Android
+
           # Download Android command line tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip -O commandlinetools.zip
           unzip commandlinetools.zip -d $HOME/Android
