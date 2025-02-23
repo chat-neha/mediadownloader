@@ -1,48 +1,29 @@
-name: Build APK
+name: Build Android App with Buildozer
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v2
 
-      - name: Set Up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
 
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y zip unzip wget
-          python -m pip install --upgrade pip
-          pip install buildozer gdown
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-pip python3-dev build-essential
+        pip install cython buildozer
 
-      - name: Install Android SDK & NDK
-        run: |
-          sudo apt install -y openjdk-17-jdk
-          sudo apt install -y android-sdk android-sdk-platform-tools android-sdk-build-tools
-          echo "export ANDROID_HOME=$HOME/Android/Sdk" >> $GITHUB_ENV
-          echo "export PATH=$ANDROID_HOME/emulator:$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$PATH" >> $GITHUB_ENV
-
-      - name: Download ffmpeg.exe
-        run: |
-          gdown --id 1t6u5fsMOIlW3XodLp_bjOV60XzXQsiar -O ffmpeg.exe
-
-      - name: Build APK
-        run: |
-          buildozer -v android debug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release
-          path: bin/*.apk
+    - name: Run Buildozer
+      run: |
+        buildozer android debug
