@@ -4,9 +4,13 @@ import yt_dlp
 
 app = Flask(__name__)
 
-# Ensure 'static/downloads' directory exists
+# Ensure 'static/downloads' and 'static/cookies' directories exist
 DOWNLOAD_FOLDER = "static/downloads"
+COOKIES_FOLDER = "static/cookies"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+os.makedirs(COOKIES_FOLDER, exist_ok=True)
+
+COOKIE_FILE = os.path.join(COOKIES_FOLDER, "cookies.txt")
 
 def sanitize_filename(filename):
     """ Ensure safe filenames by removing problematic characters """
@@ -18,24 +22,18 @@ def download_video(url, format_type):
             'format': 'bestvideo+bestaudio/best',
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.mp4'),
             'postprocessors': [{'key': 'FFmpegVideoConvertor', 'preferedformat': 'mp4'}],
-            'nocheckcertificate': True,  # Bypass SSL issues
-            'force-ipv4': True,  # Avoid captcha verification
-            'ignoreerrors': True,  # Continue on minor errors
-            'fallback-format': '18',  # Fallback to MP4 360p if best fails
-            'cookies_from_browser': ('chrome',),  # Allow user to sign in via Chrome
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         },
         'mp3': {
             'format': 'bestaudio/best',
             'outtmpl': os.path.join(DOWNLOAD_FOLDER, '%(title)s.mp3'),
             'postprocessors': [{'key': 'FFmpegExtractAudio', 'preferredcodec': 'mp3', 'preferredquality': '192'}],
-            'nocheckcertificate': True,
-            'force-ipv4': True,
-            'ignoreerrors': True,
-            'cookies_from_browser': ('chrome',),
-            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
         }
     }
+
+    # If a cookie file exists, use it
+    if os.path.exists(COOKIE_FILE):
+        options['mp4']['cookiefile'] = COOKIE_FILE
+        options['mp3']['cookiefile'] = COOKIE_FILE
 
     ydl_opts = options.get(format_type, {})
     try:
@@ -49,6 +47,18 @@ def download_video(url, format_type):
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/upload_cookies', methods=['POST'])
+def upload_cookies():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No file selected'}), 400
+
+    file.save(COOKIE_FILE)
+    return jsonify({'success': True, 'message': 'Cookies uploaded successfully!'})
 
 @app.route('/download', methods=['POST'])
 def download():
