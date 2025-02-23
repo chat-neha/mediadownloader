@@ -6,17 +6,56 @@
     <title>YouTube Downloader</title>
 </head>
 <body>
-    <h2>YouTube Downloader</h2>
+    <h1>YouTube Downloader</h1>
+
+    <!-- Upload Cookies -->
+    <form id="cookieUploadForm">
+        <input type="file" id="cookieFile" name="file">
+        <button type="submit">Upload Cookies</button>
+    </form>
+
+    <br>
+
+    <!-- Input for YouTube URL -->
     <input type="text" id="url" placeholder="Enter YouTube URL">
+    
+    <br><br>
+
+    <!-- Download Buttons -->
     <button onclick="download('mp4')">Download MP4</button>
     <button onclick="download('mp3')">Download MP3</button>
+
     <p id="status"></p>
 
     <script>
+        document.getElementById('cookieUploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let formData = new FormData();
+            let fileInput = document.getElementById('cookieFile');
+            
+            if (fileInput.files.length === 0) {
+                alert("Please select a cookies.txt file first.");
+                return;
+            }
+            
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/upload_cookies', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    alert("Cookies uploaded successfully!");
+                } else {
+                    alert("Error: " + data.error);
+                }
+            });
+        });
+
         function download(format) {
-            let url = document.getElementById("url").value;
+            let url = document.getElementById('url').value;
             if (!url) {
-                document.getElementById("status").innerText = "Please enter a valid URL.";
+                alert("Please enter a YouTube URL.");
                 return;
             }
 
@@ -28,12 +67,13 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById("status").innerHTML = `<a href="${data.filename}" download>Click to download</a>`;
+                    document.getElementById('status').innerText = "Download Complete: " + data.filename;
                 } else {
-                    document.getElementById("status").innerText = "Download failed.";
+                    document.getElementById('status').innerText = "Error: " + data.error;
                 }
             });
         }
     </script>
+
 </body>
 </html>
