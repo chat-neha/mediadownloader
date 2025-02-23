@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Downloader</title>
+</head>
+<body>
+    <h2>YouTube Downloader</h2>
+    <input type="text" id="url" placeholder="Enter YouTube URL">
+    <button onclick="download('mp4')">Download MP4</button>
+    <button onclick="download('mp3')">Download MP3</button>
+    <p id="status"></p>
+
+    <script>
+        function download(format) {
+            let url = document.getElementById("url").value;
+            if (!url) {
+                document.getElementById("status").innerText = "Please enter a valid URL.";
+                return;
+            }
+
+            fetch('/download', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url, format: format })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById("status").innerHTML = `<a href="${data.filename}" download>Click to download</a>`;
+                } else {
+                    document.getElementById("status").innerText = "Download failed.";
+                }
+            });
+        }
+    </script>
+</body>
+</html>
